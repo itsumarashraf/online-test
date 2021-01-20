@@ -1,0 +1,115 @@
+{% extends 'userbase.html' %}
+{% block title %}Appointments{% endblock title %}
+
+{% block body %}
+<style>
+    .input-dob {
+        height: 40px;
+        padding: 10px;
+        border-color: rgb(109 109 109 / 15%);
+        border-radius: 5px;
+        color: grey;
+        width: 100%;
+    }
+
+    .input-dob:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+    }
+</style>
+<div class="container  bg-light p-5 mt-3">
+    <div class="row">
+        <div class="col-lg-8">
+
+            <h3 class="text-primary">Appointments</h3>
+            <hr>
+
+            <form method="POST" action="{% url 'aptsuccess' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="patientname">Patient Name</label>
+                    <input type="text" class="form-control" id="patientname" name="patientname"
+                        placeholder="Enter you name">
+                </div>
+
+                <div class="form-check-inline ">
+                    <p>Gender</p>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+                    <label class="form-check-label" for="male">Male</label>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="gender" id="female" value="Female">
+                    <label class="form-check-label" for="female">Female</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input class="input-dob"type="date" id="dob" name="dob">
+                </div>
+
+                <div class="form-group">
+                    <label for="ro">Address</label>
+                    <input class="form-control" type="text" id="ro" name="address" placeholder="Enter Address">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Mobile Number</label>
+                    <input type="phone" class="form-control" id="phone" name="phone" placeholder="Enter Mobile No">
+                </div>
+                <div class="form-group">
+                    <label for="prescription">Prescription (if Available)</label>
+                    <input type="file" class="form-control-file" name="file" id="prescription">
+                </div>
+                <div class="form-group">
+                    
+                    <input type="hidden" class="form-control-file" name="loggeduserid" value={{request.session.userid}} id="userid">
+                </div>
+                <br>
+                <br>
+
+                <!-- Available Test List -->
+                <p class="text-primary">Select Test</p>
+                <hr>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">S.NO</th>
+                            <th scope="col">TEST NAME</th>
+                            <th scope="col">PRICE</th>
+                            <th scope="col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tbody>
+                        {% for testitem in testitems %}
+                        <tr>
+                            <th scope="row">{{ testitem.id }}</th>
+                            <td>{{ testitem.test_title }}</td>
+                            <td>{{ testitem.price }}</td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="hidden" name="price[]" value="{{ testitem.price }}">
+                                    <input type="checkbox" class="form-check-input" id="chosetest" name="choice[]" value="{{ testitem.test_title }}">
+                                    <label class="form-check-label" for="chosetest"></label>
+                                  </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </tbody>
+                </table>
+
+                <br>
+
+                <button style="border-radius: 20px; padding:5px 20px 5px 20px;" type="submit"
+                    class="btn btn-primary">Book</button>
+
+            </form>
+            {% endblock %} 

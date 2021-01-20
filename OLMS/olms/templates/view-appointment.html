@@ -1,0 +1,118 @@
+{% extends 'userbase.html' %}
+{% block title %}Appointment History{% endblock title %}
+
+{% block body %}
+<div class="container  bg-light p-5 mt-3">
+  <div class="row">
+    <div class="col-lg-12">
+      <h4></h4>
+      <hr>
+
+      <style>
+        th {
+          width: 25%;
+          color: rgb(69, 128, 240);
+        }
+      </style>
+      <table class="table table-sm table-bordered table-responsive-lg">
+        <thead>
+          <tr>
+            <th scope="row">Appointment Number</th>
+            <th scope="row">Patient Name</th>
+            <th scope="row">Gender</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.appointmentno}}</td>
+            <td>{{detail.patientname}}</td>
+            <td class="text-capitalize">{{detail.gender}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Address</th>
+            <th scope="row">Email</th>
+            <th scope="row">Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.address}}</td>
+            <td>{{detail.email}}</td>
+            <td>{{detail.mobile}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Date of Birth</th>
+            <th style="color: red;" scope="row">Admin Remark</th>
+            <th style="color: red;" scope="row">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.dateofbirth}}</td>
+            <td class="font-weight-bold">{{status.comment}}</td>
+            <td>{{status}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Order Date</th>
+            <th scope="row">Order Time</th>
+            <th scope="row">Prescription</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.appointmentdate}}</td>
+            <td>{{detail.appointmenttime}}</td>
+            <td><a href="{{url}}" download="{{detail.prescription}}" target="_blank">{{text}}</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <h4>Test Detail</h4>
+      <hr>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">S.NO</th>
+            <th scope="col">Test Name</th>
+            <th scope="col">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tbody>
+          {% for i in new %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{i.tname}}</td>
+            <td>{{i.price}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Total</th>
+            <th scope="col">{{total}}
+              <button type="submit" class="btn btn-primary rounded-pill float-right" {{enable}}><i class="fas fa-cart-plus pr-1"></i>Pay</button>
+            </th>
+          </tr>
+        </thead>
+        </tbody>
+      </table>
+
+    
+       <!-- ################# form starts here ##################################### -->
+              <form method="POST" action="">
+                {% csrf_token%}
+                  <button type="submit" class="btn btn-danger" {{enable}}>Cancel</button>
+
+    </div>
+  </div>
+</div>
+
+{% endblock body %}

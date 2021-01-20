@@ -1,0 +1,41 @@
+{% extends 'userbase.html' %}
+{% block title %}Appointment History{% endblock title %}
+
+{% block body %}
+<div class="container  bg-light p-5 mt-3">
+  <div class="row">
+    <div class="col-lg-12">
+      <h4>Appointment History</h4>
+      <hr>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">S.NO</th>
+            <th scope="col">Appointment Number</th>
+            <th scope="col">Patient Name</th>
+            <th scope="col">Mobile Number</th>
+            <th scope="col">Email</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tbody>
+          {% for history,status in context%}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{history.appointmentno}}</td>
+            <td>{{ history.patientname }}</td>
+            <td>{{ history.mobile }}</td>
+            <td>{{ history.email }}</td>
+            <td>{{ status }}</td>
+            <td><a href="{% url 'view-apt' request.session.userid history.appointmentno %}"><i class="fas fa-eye"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock body %}

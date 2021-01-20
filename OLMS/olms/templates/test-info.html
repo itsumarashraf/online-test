@@ -1,0 +1,23 @@
+{% extends 'userbase.html' %}
+{% block title %}Test Detail{% endblock title %}
+
+{% block body %}
+<div class="container  bg-light p-5 mt-3">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Test Information</h4>
+            <hr>
+            <h4 class="text-center text-primary">{{info.test_title}}</h4>
+            <table class="table table-bordered">
+                <tbody>
+                  <tr><th>Test Description</th><td>{{info.test_desc}}</td></tr>
+                    <tr><th>Test Interpretion</th><td>{{info.test_interp}}</td></tr>
+                    <tr><th>Price</th><td>{{info.price}}</td></tr>
+                  
+                  
+                </tbody>
+              </table>
+        </div>
+    </div>
+</div>
+{% endblock body %}

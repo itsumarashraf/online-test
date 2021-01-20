@@ -1,0 +1,35 @@
+{% extends 'adminbase.html' %}
+{% block title %}Manage Tests{% endblock title %}
+
+{% block body %}
+<div class="container  bg-light p-5 mt-3">
+  <div class="row">
+    <div class="col-lg-12">
+      <h4>Manage Test Details</h4>
+      <hr>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">S.NO</th>
+            <th scope="col">TEST TITLE</th>
+            <th scope="col">PRICE</th>
+            <th scope="col">ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tbody>
+          {% for testitem in testitems %}
+          <tr>
+            <th scope="row">{{ testitem.id }}</th>
+            <td>{{ testitem.test_title }}</td>
+            <td>{{ testitem.price }}</td>
+            <td><a href="edit-test/{{testitem.id}}"><i class="fas fa-edit"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock body %}

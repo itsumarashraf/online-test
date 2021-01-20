@@ -1,0 +1,38 @@
+{% extends 'adminbase.html' %}
+
+{% block title %}Add Tests{% endblock title %}
+{% block body %}
+<div class="container  bg-light p-5 mt-3">
+    <div class="row">
+        <div class="col-lg-8">
+
+            <h3>Add Test Details</h3>
+            <hr>
+
+                <form method="POST" action="{% url 'add' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                    <label for="testname">Test Name</label>
+                    <input type="text" class="form-control" id="testname" name="testname" placeholder="">
+                    </div>
+                    <div class="form-group">
+                    <label for="testdetail">Test Detail</label>
+                    <textarea class="form-control" id="testdetail" name="testdetail" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="textinterp">Test Interpretation</label>
+                        <textarea class="form-control" id="textinterp" name="testinterp" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="text" class="form-control" id="price" name="price" placeholder="">
+                    </div>
+                    
+                        <button style="border-radius: 20px; padding:5px 20px 5px 20px;" type="submit" class="btn btn-primary">ADD</button>
+                    
+                </form>
+        </div>
+    </div>
+</div>
+
+{% endblock body%}

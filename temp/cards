@@ -1,0 +1,41 @@
+<!-- cards start -->
+      
+      <div class="carousel-sec" style="background-color: #222222;">
+        <h2 style="text-align: center; padding: 20px; color:#ffc107;" >Welcome To The Clinic!</h2>
+            <div class="container">
+                    <div class="row">
+                                <div class="col col-lg-4 col-md-4 col-12">
+                                    <div class="hell">
+                                        <img class="card-img-top" src="./imgs/thyroid.jpg" alt="Card image cap">
+                                            <div class="card-body text-center text-warning">
+                                            <h5 class="card-title">Thyroid</h5>
+                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                            <a href="#" class="btn btn-primary">Know More</a>
+                                            </div>
+                                    </div>
+                            </div>
+                            <div class="col col-lg-4 col-md-4 col-12">
+                                <div class="">
+                                    <img class="card-img-top" src="./imgs/kidney.jpg" alt="Card image cap">
+                                        <div class="card-body text-center text-warning">
+                                        <h5 class="card-title">Card title</h5>
+                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        <a href="#" class="btn btn-primary">Know More</a>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="col col-lg-4 col-md-4 col-12">
+                            <div class="">
+                                <img class="card-img-top" src="./imgs/blood.jpg" alt="Card image cap">
+                                    <div class="card-body text-center text-warning">
+                                    <h5 class="card-title">Card title</h5>
+                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                    <a href="#" class="btn btn-primary">Know More</a>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+      <!-- cards end -->

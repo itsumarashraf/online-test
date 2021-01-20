@@ -1,0 +1,55 @@
+{% extends 'adminbase.html' %}
+
+{% block title%}Admin Dashboard{% endblock title%}
+{% block body %} 
+
+<div class="container  bg-light p-5 mt-3">
+    <div class="row">
+        <div class="col-lg-8">
+             <h3>Welcome to Dashboard</h3>
+            <hr>
+        </div>
+    </div>
+
+    
+   <!-- ########cards#################### -->
+
+   <div class="row">
+       <div class="col col-lg-3">
+        <div class="card new text-white bg-primary mb-3" style="max-width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-cart-plus fa-2x pr-2"></i>NEW</h5>
+              <h3 class="card-text float-right"><u>{{n}}</u></h3>
+            </div>
+          </div>
+       </div>
+       <div class="col col-lg-3">
+        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-check-circle fa-2x pr-2"></i>APPROVED</h5>
+              <h3 class="card-text float-right"><u>{{a}}</u></h3>
+            </div>
+          </div>
+       </div>
+       <div class="col col-lg-3">
+        <div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-ban fa-2x pr-2"></i>REJECTED</h5>
+              <h3 class="card-text float-right"><u>{{r}}</u></h3>
+            </div>
+          </div>
+       </div>
+       <div class="col col-lg-3">
+        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-times-circle fa-2x pr-2"></i>CANCELED</h5>
+              <h3 class="card-text float-right "><u>{{c}}</u></h3>
+            </div>
+          </div>
+       </div>
+   </div>
+                
+
+</div>
+
+{% endblock body %}
