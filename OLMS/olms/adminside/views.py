@@ -2,10 +2,11 @@ from django.shortcuts import render,HttpResponse,redirect
 from adminside.models import test
 from django.contrib.auth.forms import UserCreationForm
 from .forms import createuserform
-
+from users.models import enduser
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from users.models import appointmentstatus
+# from users.forms import useredit
 # Create your views here.
 
 @login_required(login_url='adminlogin')
@@ -75,5 +76,25 @@ def adminlogout(request):
     return redirect('adminlogin')
 
 
-########### Calculate Total Tests ################################
+def manageusers(request):
+    userlist=enduser.objects.all()
+    return render(request, 'manageusers.html',{'userlist':userlist})
+
+def edituser(request,user_id):
+    if request.method == 'POST':
+        fname=request.POST.get('fname')
+        lname=request.POST.get('lname')
+        email=request.POST.get('email')
+        uname=request.POST.get('uname')
+        password=request.POST.get('password')
+        enduser.objects.filter(id=user_id).update(firstname=fname,lastname=lname,email=email,username=uname,password=password)
+    
+    userlist=enduser.objects.get(id=user_id)
+    return render(request,'editenduser.html',{'userlist':userlist})
+
+def deleteuser(request,user_id):
+    getuser=enduser.objects.get(id=user_id)
+    getuser.delete()
+    return redirect('manageusers')
+
 

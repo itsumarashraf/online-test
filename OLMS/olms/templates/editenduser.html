@@ -1,0 +1,43 @@
+{% extends 'adminbase.html' %}
+
+{% block title%}Admin Dashboard{% endblock title%}
+{% block body %}
+
+<div class="container  bg-light p-5 mt-3">
+    <div class="row">
+        <div class="col-lg-8">
+            <h3>Manage Users</h3>
+            <hr>
+        </div>
+    </div>
+    
+    <form method="POST" action="">
+        {%csrf_token%}
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="fname">First Name</label>
+            <input type="text" class="form-control" id="fname" name="fname" value="{{userlist.firstname}}">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="lname">Last Name</label>
+            <input type="text" class="form-control" id="lname" name="lname" value="{{userlist.lastname}}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" value="{{userlist.email}}">
+        </div>
+        <div class="form-group">
+          <label for="uname">User Name</label>
+          <input type="text" class="form-control" id="uname" name="uname" value="{{userlist.username}}">
+        </div>
+        <div class="form-group">
+            <label for="pass">Password</label>
+            <input type="password" class="form-control" id="pass" name="password" value="{{userlist.password}}">
+          </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+</div>
+
+{% endblock body %}
