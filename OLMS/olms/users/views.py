@@ -94,6 +94,8 @@ def aptsuccess(request):
                 h=testchoice(appointment=document,tname=val,price=val2)
                 h.save() 
         # -----------------------------------------------------------------------------------------
+        print(choice)
+        print(price)
 
     return render(request,'appointment-success.html',{'who':who,'name':name,'aptid':aptid})
 
