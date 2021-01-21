@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse,redirect
 from adminside.models import test
-from users.models import appointment,enduser, appointmentstatus,testchoice
+from users.models import appointment,enduser, appointmentstatus,testchoice,orderamount
 from django.contrib.auth.decorators import login_required
 import random
 from django.contrib.sessions.models import Session
@@ -89,18 +89,30 @@ def aptsuccess(request):
         # gets a list of test name and price from the checkboxes and saves them in testchoice model 
         choice=request.POST.getlist('choice[]')
         price=request.POST.getlist('price[]')
+
+        
+
         if choice:
             for val,val2 in zip(choice,price):
                 h=testchoice(appointment=document,tname=val,price=val2)
                 h.save() 
         # -----------------------------------------------------------------------------------------
-        print(choice)
-        print(price)
+        
+        # calulate the total amount and save in orderamount model #
+        total = calculateamount(price)
+        
+        amt=orderamount(appointment=document,amount=total)
+        amt.save()
+        # -----------------------------------------------------------------------
 
     return render(request,'appointment-success.html',{'who':who,'name':name,'aptid':aptid})
 
 
-
+def calculateamount(price):
+    s=0
+    for val in price:
+        s=s+int(val)
+    return s
 
 
 
@@ -122,10 +134,12 @@ def viewappointment(request,userid,aptid):
 
         if request.method == 'POST':
             appointmentstatus.objects.filter(appointment__appointmentno=aptid).update(status='Cancel', comment='You have Canceled This Order')
+
     aptdetail=appointment.objects.get(appointmentno=aptid)
     status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
     new=testchoice.objects.filter(appointment__appointmentno=aptid)
-    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status, 'new':new, 'enable':enable})
+    amt=orderamount.objects.get(appointment=aptid)
+    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable})
 
 
 def userlogin(request):
@@ -188,12 +202,7 @@ def appointmentdetail(request,apt_id):
     aptdetail=appointment.objects.get(id=apt_id)
     status=appointmentstatus.objects.get(appointment__id=apt_id)
     new=testchoice.objects.filter(appointment=apt_id)
-    
-    
-    total=0
-    for t in new:
-        total=total + t.price
-    print(total)
+    amt=orderamount.objects.get(appointment__id=apt_id)
     
     if aptdetail.prescription:
         url=aptdetail.prescription.url
@@ -202,7 +211,7 @@ def appointmentdetail(request,apt_id):
         url=aptdetail.prescription
         text=""
     
-    return render(request, 'appointment-details.html',{'detail':aptdetail, 'new':new,'total':total, 'status':status, 'url':url, 'text':text})
+    return render(request, 'appointment-details.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text})
     
 def approvedappointments(request):
     new=appointment.objects.filter(appointmentstatus__status='Approve')

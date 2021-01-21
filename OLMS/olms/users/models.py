@@ -23,7 +23,7 @@ class enduser(models.Model):
 
 class appointment(models.Model):
     user_id = models.ForeignKey(enduser,on_delete=models.CASCADE)
-    appointmentno = models.CharField(max_length=100)
+    appointmentno = models.CharField(max_length=100, unique=True)
     patientname =models.CharField(max_length=30)
     gender = models.CharField(max_length=10)
     address= models.CharField(max_length=200, default='NA')
@@ -54,6 +54,11 @@ class testchoice(models.Model):
 
     def __str__(self):
         return self.tname
+
+class orderamount(models.Model):
+    appointment=models.ForeignKey(appointment, to_field='appointmentno', on_delete=models.CASCADE)
+    amount=models.IntegerField(default=0)
+
 
 
 # class apt(models.Model):
