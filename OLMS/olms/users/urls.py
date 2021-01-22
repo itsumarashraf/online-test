@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from users import views
 from .views import testinfo, testdetails
 from django.conf.urls.static import static
@@ -21,4 +21,5 @@ urlpatterns = [
     path("rejected-apts/", views.rejectedappointments, name='rejectedapts'),
     path("approved-apts/", views.approvedappointments, name='approvedapts'),
     path("usercanceled-apts/", views.canceledappointments, name='usercanceled'),
+    path("userside/appointment-history/", include('payment.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -73,46 +73,73 @@
         </tbody>
       </table>
       <br>
-      <h4>Test Detail</h4>
-      <hr>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">S.NO</th>
-            <th scope="col">Test Name</th>
-            <th scope="col">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tbody>
-          {% for i in new %}
-          <tr>
-            <th scope="row">{{forloop.counter}}</th>
-            <td>{{i.tname}}</td>
-            <td>{{i.price}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">Total</th>
-            <th scope="col">{{amt.amount}}
-              <button type="submit" class="btn btn-primary rounded-pill float-right" {{enable}}><i class="fas fa-cart-plus pr-1"></i>Pay</button>
-            </th>
-          </tr>
-        </thead>
-        </tbody>
-      </table>
+      <div class="row">
+        <div class="col-lg-8">
+          <h4>Test Detail</h4>
+          <hr>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">S.NO</th>
+                <th scope="col">Test Name</th>
+                <th scope="col">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tbody>
+              {% for i in new %}
+              <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                <td>{{i.tname}}</td>
+                <td>{{i.price}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Total</th>
+                <th scope="col">{{amt.amount}}
+                  <!-- <button type="submit" class="btn btn-primary rounded-pill float-right" {{enable}}><i class="fas fa-cart-plus pr-1"></i>Pay</button> -->
+                  <a href="{% url 'checkout' detail.appointmentno %}" class="btn btn-primary rounded-pill float-right" style="display: {{payenable}};"><i class="fas fa-cart-plus pr-1"></i>Pay</a>
+                </th>
+              </tr>
+            </thead>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-lg-4">
 
-    
-       <!-- ################# form starts here ##################################### -->
-              <form method="POST" action="">
-                {% csrf_token%}
-                  <button type="submit" class="btn btn-danger" {{enable}}>Cancel</button>
+          <h4>Payment Status</h4>
+          <hr>
+          {% if s.paymentstatus == True %}
+          <div class="card bg-success">
+            <div class="card-body text-center">
+              <p class="card-text font-weight-bold text-light">Payment Success</p>
+              <hr class="text-light">
+              <p class="text-light">You Have Paid this order</p>
+            </div>
+          </div>
+          {% else %}
+          <div class="card" style="background-color: #dae0e59c;">
+            <div class="card-body text-center">
+              <p class="card-text font-weight-bold">Payment Not Recived</p>
+              <hr>
+              <p>You have not Payed for this order yet</p>
+            </div>
+          </div>
+          {% endif %}
 
+        </div>
+
+
+        <!-- ################# form starts here ##################################### -->
+        <form method="POST" action="">
+          {% csrf_token%}
+          <button type="submit" class="btn btn-danger" {{enable}}>Cancel</button>
+
+      </div>
     </div>
   </div>
-</div>
 
-{% endblock body %}
+  {% endblock body %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse,redirect
 from adminside.models import test
 from users.models import appointment,enduser, appointmentstatus,testchoice,orderamount
+from payment.models import paymentdetail
 from django.contrib.auth.decorators import login_required
 import random
 from django.contrib.sessions.models import Session
@@ -139,7 +140,14 @@ def viewappointment(request,userid,aptid):
     status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
     new=testchoice.objects.filter(appointment__appointmentno=aptid)
     amt=orderamount.objects.get(appointment=aptid)
-    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable})
+    print(aptid)
+    s=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
+    if s:
+        payenable='none'
+    else:
+        payenable='initial'
+
+    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable})
 
 
 def userlogin(request):
