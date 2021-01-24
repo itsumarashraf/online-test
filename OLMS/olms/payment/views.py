@@ -1,6 +1,8 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse,HttpResponseRedirect
 from .models import paymentdetail
 from users.models import *
+from django.http import Http404
+
 from users.views import *
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
@@ -8,19 +10,56 @@ from django.views.decorators.csrf import csrf_exempt
 def checkout(request,aptid):
     new=appointment.objects.get(appointmentno=aptid)
     amt=orderamount.objects.get(appointment__appointmentno=aptid)
+    s=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
+    if s:
+        if s.paymentid:
+            raise Http404("Page does not exist")
 
-    if request.method == 'POST':
-        ramount= amt.amount * 100
-        client= razorpay.Client(auth =("rzp_test_FO6OeouYXvVlwh", "DG2Es6WXrUr6DUfX76sioXXE"))
-        payment = client.order.create({'amount':ramount, 'currency':'INR', 'payment_capture':'1'})
-        amount=payment['amount'] /100
-        pay =paymentdetail(appointment=new,amount=amount,orderid=payment['id'])
-        pay.save()
-        print(payment)
-        return render(request,'payments/checkout.html',{'aptid':aptid, 'new':new,'amt':amt,'payment':payment})
+        else:
+            if request.method == 'POST':
+                result=request.POST.get('pay')
+                if result == 'cod':
+                    ramount= amt.amount
+                    pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).update(appointment=new,amount=0,amountdue=ramount,orderid='NA',codstatus=True)
+                    return HttpResponse("You Have successfully Ordered as COD")
+            else:
 
-    
-    
+                # update already existing order with new payment id
+                ramount= amt.amount * 100
+                client= razorpay.Client(auth =("rzp_test_FO6OeouYXvVlwh", "DG2Es6WXrUr6DUfX76sioXXE"))
+                payment = client.order.create({'amount':ramount, 'currency':'INR', 'payment_capture':'1'})
+                amount=payment['amount'] /100
+                pay =paymentdetail.objects.filter(appointment__appointmentno=aptid).update(appointment=new,amount=amount,orderid=payment['id'])
+                
+                # print('updated'+ aptid, payment)
+                return render(request,'payments/checkout.html',{'aptid':aptid, 'new':new,'amt':amt,'payment':payment})
+    else:
+        # check payment mode
+        # if payment mode is cod
+        # update payment method as cod and return
+        if request.method == 'POST':
+            result=request.POST.get('pay')
+            if result == 'cod':
+                print('method is cod')
+                ramount= amt.amount * 100
+                pay=paymentdetail(appointment=new,amountdue=ramount,codstatus=True)
+                pay.save()
+                return HttpResponse("You Have successfully Ordered as COD")
+
+            elif result == 'online':
+                print('method is online')
+                # payment method is online
+                # create new instance of online payment id and return    
+
+                ramount= amt.amount * 100
+                client= razorpay.Client(auth =("rzp_test_FO6OeouYXvVlwh", "DG2Es6WXrUr6DUfX76sioXXE"))
+                payment = client.order.create({'amount':ramount, 'currency':'INR', 'payment_capture':'1'})
+                amount=payment['amount'] /100
+                pay =paymentdetail(appointment=new,amount=amount,orderid=payment['id'])
+                pay.save()
+                print(payment)
+                return render(request,'payments/checkout.html',{'aptid':aptid, 'new':new,'amt':amt,'payment':payment})
+
     return render(request,'payments/checkout.html',{'aptid':aptid, 'new':new,'amt':amt})
 
 
@@ -37,5 +76,7 @@ def success(request):
             user.paymentstatus=True
             user.paymentid=postpaymentid 
             user.save()
-    
+            return render(request,'payments/success.html')
+        else:
+            return HttpResponse("Payment Failed")    
     return render(request,'payments/success.html')

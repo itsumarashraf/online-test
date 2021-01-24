@@ -142,12 +142,14 @@ def viewappointment(request,userid,aptid):
     amt=orderamount.objects.get(appointment=aptid)
     print(aptid)
     s=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
+    
     if s:
-        payenable='none'
-    else:
-        payenable='initial'
-
-    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable})
+        if s.paymentid or s.codstatus==True:
+            payenable='none'
+        else:
+            payenable='initial'
+        return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable})
+    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s})
 
 
 def userlogin(request):

@@ -101,7 +101,7 @@
                 <th scope="col">Total</th>
                 <th scope="col">{{amt.amount}}
                   <!-- <button type="submit" class="btn btn-primary rounded-pill float-right" {{enable}}><i class="fas fa-cart-plus pr-1"></i>Pay</button> -->
-                  <a href="{% url 'checkout' detail.appointmentno %}" class="btn btn-primary rounded-pill float-right" style="display: {{payenable}};"><i class="fas fa-cart-plus pr-1"></i>Pay</a>
+                  <a href="{% url 'checkout' detail.appointmentno %}" class="btn btn-primary rounded-pill float-right" style="display:{{payenable}};"><i class="fas fa-cart-plus pr-1"></i>Pay</a>
                 </th>
               </tr>
             </thead>
@@ -114,17 +114,22 @@
           <hr>
           {% if s.paymentstatus == True %}
           <div class="card bg-success">
-            <div class="card-body text-center">
-              <p class="card-text font-weight-bold text-light">Payment Success</p>
-              <hr class="text-light">
+            <div class="card-header font-weight-bold text-light  text-center">Payment Success</div>
+            <div class="card-body  text-center">
               <p class="text-light">You Have Paid this order</p>
+            </div>
+          </div>
+          {% elif s.codstatus == True %}
+          <div class="card" style="background-color: #ffda0a9c;">
+            <div class="card-header font-weight-bold  text-center">Payment selected as COD</div>
+            <div class="card-body  text-center">
+              <p>You have placed this order as COD</p>
             </div>
           </div>
           {% else %}
           <div class="card" style="background-color: #dae0e59c;">
-            <div class="card-body text-center">
-              <p class="card-text font-weight-bold">Payment Not Recived</p>
-              <hr>
+            <div class="card-header font-weight-bold  text-center">Payment Not Recived</div>
+            <div class="card-body  text-center">
               <p>You have not Payed for this order yet</p>
             </div>
           </div>
