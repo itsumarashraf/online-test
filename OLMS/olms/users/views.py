@@ -13,10 +13,27 @@ from django.utils.decorators import method_decorator
 @userlogin_auth
 def userside(request):
     if request.session.has_key('userlogged'):
-        
+        if request.method=="GET":
+            sea=request.GET.get('search')
+            if sea:
+                print(sea)
+                a=appointment.objects.filter(user_id=request.session['userid']).filter(appointmentno__iexact=sea).first()          
+                if not a:
+                    msg='No Records Found'
+                    return render(request,'userside.html',{'msg':msg})
+                else:
+                    r=a              
+                print(r.email)
+                return render(request,'userside.html',{'r':r})
+
         return render(request,'userside.html')
     else:
         return redirect('userlogin')
+
+def search(request):
+        
+    return HttpResponse('this is the search result')     
+
 
 @userlogin_auth
 def testdetails(request):
@@ -213,7 +230,8 @@ def appointmentdetail(request,apt_id):
     status=appointmentstatus.objects.get(appointment__id=apt_id)
     new=testchoice.objects.filter(appointment=apt_id)
     amt=orderamount.objects.get(appointment__id=apt_id)
-    
+    pay=paymentdetail.objects.filter(appointment__id=apt_id).first()
+    # print(pay.paymentstatus)
     if aptdetail.prescription:
         url=aptdetail.prescription.url
         text="Download"
@@ -221,7 +239,7 @@ def appointmentdetail(request,apt_id):
         url=aptdetail.prescription
         text=""
     
-    return render(request, 'appointment-details.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text})
+    return render(request, 'appointment-details.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text,'pay':pay})
     
 def approvedappointments(request):
     new=appointment.objects.filter(appointmentstatus__status='Approve')

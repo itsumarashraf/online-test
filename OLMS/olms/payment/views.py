@@ -20,7 +20,7 @@ def checkout(request,aptid):
                 result=request.POST.get('pay')
                 if result == 'cod':
                     ramount= amt.amount
-                    pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).update(appointment=new,amount=0,amountdue=ramount,orderid='NA',codstatus=True)
+                    pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).update(appointment=new,amount=0,amountdue=ramount,orderid='NA',paymentid='NA',codstatus=True)
                     return HttpResponse("You Have successfully Ordered as COD")
             else:
 
@@ -41,8 +41,8 @@ def checkout(request,aptid):
             result=request.POST.get('pay')
             if result == 'cod':
                 print('method is cod')
-                ramount= amt.amount * 100
-                pay=paymentdetail(appointment=new,amountdue=ramount,codstatus=True)
+                ramount= amt.amount
+                pay=paymentdetail(appointment=new,amountdue=ramount,orderid='NA',paymentid='NA',codstatus=True)
                 pay.save()
                 return HttpResponse("You Have successfully Ordered as COD")
 
