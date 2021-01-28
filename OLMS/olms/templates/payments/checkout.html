@@ -19,6 +19,7 @@
                 <label for="cod" class="pr-2" >Cash On Delivery</label>
                 <input type="radio" name="pay" id="online" class="online" value="online">
                 <label for="online">Pay Online</label>
+                <input type="hidden" name="id" value="{{aptid}}">
                 <br>
                 <button type="submit" class="btn btn-primary">Proceed</button>
             </form>
@@ -41,6 +42,7 @@
                     data-theme.color="#007bff"
                 ></script>
                 <input type="hidden" custom="Hidden Element" name="hidden">
+                <input type="hidden" value="{{aptid}}" name="getid">
                 </form>
             {% endif %}
 

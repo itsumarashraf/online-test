@@ -21,7 +21,7 @@ def checkout(request,aptid):
                 if result == 'cod':
                     ramount= amt.amount
                     pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).update(appointment=new,amount=0,amountdue=ramount,orderid='NA',paymentid='NA',codstatus=True)
-                    return HttpResponse("You Have successfully Ordered as COD")
+                    return render(request,'payments/codsuccess.html',{'aptid':aptid, 'new':new,'amt':amt})
             else:
 
                 # update already existing order with new payment id
@@ -39,15 +39,16 @@ def checkout(request,aptid):
         # update payment method as cod and return
         if request.method == 'POST':
             result=request.POST.get('pay')
+            aptid=request.POST.get('id')
             if result == 'cod':
-                print('method is cod')
+                # print('method is cod')
                 ramount= amt.amount
                 pay=paymentdetail(appointment=new,amountdue=ramount,orderid='NA',paymentid='NA',codstatus=True)
                 pay.save()
-                return HttpResponse("You Have successfully Ordered as COD")
+                return render(request,'payments/codsuccess.html',{'aptid':aptid, 'new':new,'amt':amt})
 
             elif result == 'online':
-                print('method is online')
+                # print('method is online')
                 # payment method is online
                 # create new instance of online payment id and return    
 
@@ -57,7 +58,6 @@ def checkout(request,aptid):
                 amount=payment['amount'] /100
                 pay =paymentdetail(appointment=new,amount=amount,orderid=payment['id'])
                 pay.save()
-                print(payment)
                 return render(request,'payments/checkout.html',{'aptid':aptid, 'new':new,'amt':amt,'payment':payment})
 
     return render(request,'payments/checkout.html',{'aptid':aptid, 'new':new,'amt':amt})
@@ -67,16 +67,18 @@ def checkout(request,aptid):
 def success(request):
     if request.method == "POST":
         razorpay= request.POST
+        apt=request.POST.get('getid')
         postpaymentid=razorpay['razorpay_payment_id']
-        print(postpaymentid)
+        # print(postpaymentid)
         if postpaymentid:
             postorderid= razorpay['razorpay_order_id']
-            print(postorderid)
+            # print(postorderid)
             user=paymentdetail.objects.get(orderid=postorderid)
             user.paymentstatus=True
             user.paymentid=postpaymentid 
             user.save()
-            return render(request,'payments/success.html')
+            return render(request,'payments/success.html',{'apt':apt})
         else:
             return HttpResponse("Payment Failed")    
-    return render(request,'payments/success.html')
+    return render(request,'payments/success.html',{'apt':apt})
+
