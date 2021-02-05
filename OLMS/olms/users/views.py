@@ -7,8 +7,17 @@ import random
 from django.contrib.sessions.models import Session
 from users.authmiddleware import userlogin_auth 
 from django.utils.decorators import method_decorator
+from ordertracking.views import tracking,track
+from django.http import Http404
+from ordertracking.models import trackorder
 
 # Create your views here.
+def checkauth(request):
+    if request.session.has_key('userid'):
+        return True
+    else:
+        return False
+
 
 @userlogin_auth
 def userside(request):
@@ -16,23 +25,20 @@ def userside(request):
         if request.method=="GET":
             sea=request.GET.get('search')
             if sea:
-                print(sea)
+                # print(sea)
                 a=appointment.objects.filter(user_id=request.session['userid']).filter(appointmentno__iexact=sea).first()          
                 if not a:
                     msg='No Records Found'
                     return render(request,'userside.html',{'msg':msg})
                 else:
                     r=a              
-                print(r.email)
+                # print(r.email)
                 return render(request,'userside.html',{'r':r})
 
         return render(request,'userside.html')
     else:
         return redirect('userlogin')
-
-def search(request):
-        
-    return HttpResponse('this is the search result')     
+     
 
 
 @userlogin_auth
@@ -41,40 +47,13 @@ def testdetails(request):
     return render(request,'view-test-details.html',{'testitems':test_details})
 
 def testinfo(request, test_id):
-    test_info = test.objects.get(id=test_id)
-    return render(request, 'test-info.html',{'info':test_info})
+    if checkauth(request) == True:
+        test_info = test.objects.get(id=test_id)
+        return render(request, 'test-info.html',{'info':test_info})
+    return redirect('userlogin')
 
 @userlogin_auth
 def appointments(request):
-    # if request.method=="POST":
-    #     userid=request.POST.get('loggeduserid')
-    #     who=enduser.objects.get(id=userid)
-    #     userid= who
-    #     name=request.POST.get('patientname')
-    #     address=request.POST.get('address')
-    #     gender=request.POST.get('gender')
-    #     dob=request.POST.get('dob')
-    #     cell=request.POST.get('phone')
-    #     mail=request.POST.get('email')
-    #     ticket=request.FILES.get("file")
-        
-    #     document = appointment(user_id=userid,patientname=name,address=address,gender=gender,dateofbirth=dob,mobile=cell,email=mail,prescription=ticket)
-    #     document.save()
-    #     apt= appointmentstatus(appointment=document)
-    #     apt.save()
-
-    #     # gets a list of test name and price from the checkboxes and saves them in testchoice model 
-    #     choice=request.POST.getlist('choice[]')
-    #     price=request.POST.getlist('price[]')
-    #     if choice:
-    #         for val,val2 in zip(choice,price):
-    #             h=testchoice(appointment=document,tname=val,price=val2)
-    #             h.save() 
-    #     # -----------------------------------------------------------------------------------------
-
-        
-
-
     testitem = test.objects.all()
     return render(request, 'appointments.html',{'testitems':testitem})
 
@@ -122,8 +101,12 @@ def aptsuccess(request):
         amt=orderamount(appointment=document,amount=total)
         amt.save()
         # -----------------------------------------------------------------------
+        
+        tracking(document)  #updates tracking details with refrence to current appointment
 
     return render(request,'appointment-success.html',{'who':who,'name':name,'aptid':aptid})
+
+
 
 
 def calculateamount(price):
@@ -135,38 +118,45 @@ def calculateamount(price):
 
 
 
-def appointmenthistory(request,userid):
-    history=appointment.objects.filter(user_id=userid)
-    status=appointmentstatus.objects.filter(appointment__user_id=userid)
-    mylist = zip(history,status)
+def appointmenthistory(request):
+    if checkauth(request)==True:
+        userid=request.session['userid']
+        history=appointment.objects.filter(user_id=userid)
+        status=appointmentstatus.objects.filter(appointment__user_id=userid)
+        mylist = zip(history,status)
 
-    return render(request,'appointment-history.html',{'context':mylist})
+        return render(request,'appointment-history.html',{'context':mylist})
+    return redirect('userlogin')
 
 
-def viewappointment(request,userid,aptid):
-    val=appointmentstatus.objects.get(appointment__appointmentno=aptid)
-    if val.status !='NEW':
-        enable='disabled'
-    else:
-        enable=""
-
-        if request.method == 'POST':
-            appointmentstatus.objects.filter(appointment__appointmentno=aptid).update(status='Cancel', comment='You have Canceled This Order')
-
-    aptdetail=appointment.objects.get(appointmentno=aptid)
-    status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
-    new=testchoice.objects.filter(appointment__appointmentno=aptid)
-    amt=orderamount.objects.get(appointment=aptid)
-    print(aptid)
-    s=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
-    
-    if s:
-        if s.paymentid or s.codstatus==True:
-            payenable='none'
+def viewappointment(request,aptid):
+    if checkauth(request)==True:
+        val=appointmentstatus.objects.get(appointment__appointmentno=aptid)
+        if val.status !='NEW':
+            enable='disabled'
         else:
-            payenable='initial'
-        return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable})
-    return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s})
+            enable=""
+
+            if request.method == 'POST':
+                appointmentstatus.objects.filter(appointment__appointmentno=aptid).update(status='Cancel', comment='You have Canceled This Order')
+
+        aptdetail=appointment.objects.get(appointmentno=aptid)
+        if aptdetail:
+            status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
+            new=testchoice.objects.filter(appointment__appointmentno=aptid)
+            amt=orderamount.objects.get(appointment=aptid)
+            # print(aptid)
+            s=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
+            
+            if s:
+                if s.paymentid or s.codstatus==True:
+                    payenable='none'
+                else:
+                    payenable='initial'
+                return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable})
+            return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s})
+        raise Http404('Page does not exist')
+    return redirect('userlogin')
 
 
 def userlogin(request):
@@ -238,17 +228,45 @@ def appointmentdetail(request,apt_id):
     else:
         url=aptdetail.prescription
         text=""
-    
     return render(request, 'appointment-details.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text,'pay':pay})
     
 def approvedappointments(request):
-    new=appointment.objects.filter(appointmentstatus__status='Approve')
-    return render(request, 'approved-apts.html',{'newapt':new})
+    if checkauth(request)==True:
+        new=appointment.objects.filter(appointmentstatus__status='Approve')
+        return render(request, 'approved-apts.html',{'newapt':new})
+    return redirect('userlogin')
 
 def rejectedappointments(request):
-    new=appointment.objects.filter(appointmentstatus__status='Reject')
-    return render(request, 'rejected-apts.html',{'newapt':new})
+    if checkauth(request)==True:
+        new=appointment.objects.filter(appointmentstatus__status='Reject')
+        return render(request, 'rejected-apts.html',{'newapt':new})
+    return redirect('userlogin')
 
 def canceledappointments(request):
-    new=appointment.objects.filter(appointmentstatus__status='Cancel')
-    return render(request,'usercanceled-apts.html',{'newapt':new})
+    if checkauth(request)==True:
+        new=appointment.objects.filter(appointmentstatus__status='Cancel')
+        return render(request,'usercanceled-apts.html',{'newapt':new})
+    return redirect('userlogin')
+
+def viewapproved(request, aptid):
+    if checkauth(request)==True:
+        if request.method == 'POST':
+            status=request.POST.get('mark')
+            comment=request.POST.get('comment')
+            appointmentstatus.objects.filter(appointment__id=apt_id).update(status=status,comment=comment)
+        
+        aptdetail=appointment.objects.get(appointmentno=aptid)
+        status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
+        new=testchoice.objects.filter(appointment__appointmentno=aptid)
+        amt=orderamount.objects.get(appointment__appointmentno=aptid)
+        pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
+        item=trackorder.objects.filter(appointment=aptid)
+        # print(pay.paymentstatus)
+        if aptdetail.prescription:
+            url=aptdetail.prescription.url
+            text="Download"
+        else:
+            url=aptdetail.prescription
+            text=""
+        return render(request, 'viewapproved.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text,'pay':pay,'item':item})
+    return redirect('userlogin')

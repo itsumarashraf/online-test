@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('main.urls')),
     path('', include('adminside.urls')),
     path('', include('users.urls')),
+    
     # path('adminlogin/' ,adminside_view.adminlogin, name='login' ), 
     # path('adminregister/', adminside_view.adminregister, name='reg'),
 ]

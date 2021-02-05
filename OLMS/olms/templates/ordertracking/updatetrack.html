@@ -1,0 +1,18 @@
+{% extends 'adminbase.html' %}
+{% block title %}Order Tracking{% endblock title %}
+
+{% block body %}
+<div class="container  bg-light p-5 mt-3">
+    <div class="row">
+      <div class="col-lg-10 offset-1 text-center">
+        <h4>Tracking Details</h4>
+        <hr>
+       <form method="POST" action="">
+           {% csrf_token %}
+            <input type="text" name="orderstatus">
+            <button type="submit">Submit</button>           
+       </form>
+      </div>
+    </div>
+</div>
+{% endblock body %}

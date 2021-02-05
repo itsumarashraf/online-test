@@ -5,7 +5,7 @@
 <div class="container  bg-light p-5 mt-3">
   <div class="row">
     <div class="col-lg-12">
-      <h4></h4>
+      <h4>Details</h4>
       <hr>
 
       <style>
@@ -54,7 +54,7 @@
           <tr>
             <td>{{detail.dateofbirth}}</td>
             <td class="font-weight-bold">{{status.comment}}</td>
-            <td>{{status}}</td>
+            <td class="font-weight-bold">{{status}}</td>
           </tr>
         </tbody>
         <thead>
@@ -142,7 +142,7 @@
         <form method="POST" action="">
           {% csrf_token%}
           <button type="submit" class="btn btn-danger" {{enable}}>Cancel</button>
-
+          <a href="{% url 'track' detail.appointmentno %}" class="btn btn-primary">Track Order</a>
       </div>
     </div>
   </div>

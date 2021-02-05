@@ -1,0 +1,239 @@
+{% extends 'adminbase.html' %}
+{% block title %}New Appointment{% endblock title %}
+
+{% block body %}
+<style>
+  th {
+    width: 25%;
+    color: rgb(69, 128, 240);
+  }
+</style>
+<div class="container  bg-light p-5 mt-3">
+  <div class="row">
+    <div class="col-lg-12">
+      <h4>Appointment Detail</h4>
+      <hr>
+      <table class="table table-sm table-bordered table-responsive-lg">
+        <thead>
+          <tr>
+            <th scope="row">Appointment Number</th>
+            <th scope="row">Patient Name</th>
+            <th scope="row">Gender</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.appointmentno}}</td>
+            <td>{{detail.patientname}}</td>
+            <td class="text-capitalize">{{detail.gender}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Address</th>
+            <th scope="row">Email</th>
+            <th scope="row">Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.address}}</td>
+            <td>{{detail.email}}</td>
+            <td>{{detail.mobile}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Date of Birth</th>
+            <th scope="row">Ordered By</th>
+            <th scope="row">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.dateofbirth}}</td>
+            <td>{{detail.user_id.firstname}}</td>
+            <td>{{status}}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th scope="row">Order Date</th>
+            <th scope="row">Order Time</th>
+            <th scope="row">Prescription</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{detail.appointmentdate}}</td>
+            <td>{{detail.appointmenttime}}</td>
+            <td><a href="{{url}}" download="{{detail.prescription}}" target="_blank">{{text}}</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br>
+
+  <!-- ##################### vertical tabs starts from here ############################# -->
+
+  <style>
+    .nav-pills .nav-link.active,
+    .nav-pills .show>.nav-link {
+      color: #fff;
+      background-color: #dc3545;
+    }
+  </style>
+  <div class="row">
+    <div class="col-lg-2">
+      <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab"
+          aria-controls="v-pills-home" aria-selected="true">Test Details</a>
+        <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab"
+          aria-controls="v-pills-profile" aria-selected="false">Payment Details</a>
+          <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-messages" role="tab"
+          aria-controls="v-pills-profile" aria-selected="false">Tracking Details</a>
+        
+      </div>
+    </div>
+
+    <div class="col-lg-10">
+      <div class="tab-content" id="v-pills-tabContent">
+
+        <!-- ############################### Test Details #################################### -->
+
+        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+          <table class="table table-stripped table-sm">
+            <thead>
+              <tr>
+                <th scope="col">S.NO</th>
+                <th scope="col">Test Name</th>
+                <th scope="col">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+            <tbody>
+              {% for i in new %}
+              <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                <td>{{i.tname}}</td>
+                <td>{{i.price}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Total</th>
+                <th scope="col">{{amt.amount}}</th>
+              </tr>
+            </thead>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ################################## Payments ######################################### -->
+        <style>
+          
+        </style>
+
+        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+          <table class="table table-bordered table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Payment Status</th>
+                {% if pay.paymentstatus %}
+                <td class="table-success">Payment Recived</td>
+                {% elif pay.codstatus %}
+                <td class="table-warning">Order Recived as COD</td>
+                {% else %}
+                <td class="table-danger">Payment Not Recived</td>
+                {% endif %}
+              </tr>
+              <tr>
+                <th scope="col">Amount Paid</th>
+                <td>{{pay.amount}}</td>
+              </tr>
+              <tr>
+                <th scope="col">Amount Payable</th>
+                <td>{{pay.amountdue}}</td>
+              </tr>
+              <tr>
+                <th scope="col">Order Id</th>
+                <td>{{pay.orderid}}</td>
+              </tr>
+              <tr>
+                <th scope="col">Payment Id</th>
+                <td>{{pay.paymentid}}</td>
+              </tr>
+
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <th scope="col">Status</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </thead>
+                    {% for item in item %}
+                  <tr>
+                    <td>{{item.orderstatus}}</td>
+                    <td>{{item.ordertimestamp}}</td>
+                    <td>{{item.updatetimestamp}}</td>
+                  </tr>
+                    {% endfor %}
+                <tbody>
+                </tbody>
+              </table>
+        </div>
+        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ###################### Vertical Tabs Ends Here ################################################### -->
+
+
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary mx-auto" data-toggle="modal" data-target="#exampleModal">
+    Update Order
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Tracking</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- ################# form starts here ##################################### -->
+          <form method="POST" action="{% url 'updatetrack' detail.appointmentno %}">
+            {% csrf_token%}
+            
+            <div class="form-group">
+              <label for="comment">Comment</label>
+              <textarea maxlength="100" class="form-control" id="comment" rows="3" name="comment"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock body %}

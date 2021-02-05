@@ -30,7 +30,7 @@
             <td>{{ apt.mobile }}</td>
             <td>{{ apt.email }}</td>
             <td>Approved</td>
-            <td><a href="{% url 'appointmentdetails' apt.id %}"><i class="fas fa-eye"></i></a></td>
+            <td><a href="{% url 'viewapproved' apt.appointmentno %}"><i class="fas fa-eye"></i></a></td>
           </tr>
           {% endfor %}
         </tbody>

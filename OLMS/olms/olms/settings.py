@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'adminside.apps.AdminsideConfig',
     'users.apps.UsersConfig',
     'payment.apps.PaymentConfig',
+    'ordertracking.apps.OrdertrackingConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -112,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

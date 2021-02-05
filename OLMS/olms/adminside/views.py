@@ -6,11 +6,13 @@ from users.models import enduser
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from users.models import appointmentstatus
+
 # from users.forms import useredit
 # Create your views here.
 
 @login_required(login_url='adminlogin')
 def adminside(request):
+    
     n=appointmentstatus.objects.filter(status='NEW')
     r=appointmentstatus.objects.filter(status='Reject')
     a=appointmentstatus.objects.filter(status='Approve')
