@@ -32,8 +32,8 @@ class appointment(models.Model):
     email= models.CharField(max_length=100)
     appointmentdate = models.DateField(default=date.today)
     appointmenttime = models.DateTimeField(default=timezone.now)
-    prescription= models.FileField(blank=True, null=True)
-    
+    prescription= models.FileField(upload_to='prescriptions/',blank=True, null=True)
+    report=models.FileField(upload_to='reports/',blank=True,null=True)
 
     def __str__(self):
         return self.patientname

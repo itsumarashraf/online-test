@@ -14,13 +14,18 @@ def track(request,aptid):
     if request.session.has_key('userid'):
         item=trackorder.objects.filter(appointment=aptid)
         details=appointment.objects.get(appointmentno=aptid)
-        return render(request,'ordertracking/track.html',{'item':item,'details':details})
+        if details.report and details.report.url:
+            disable=''
+            url=details.report.url
+        else:
+            url=''
+            disable='disabled'
+        return render(request,'ordertracking/track.html',{'item':item,'details':details,'disable':disable,'url':url})
     raise Http404('Page Does not Exist')
 
 def updatetrack(request,aptid):
     if request.user.id:
         if request.method == 'POST':
-            print('hello this is update track function',aptid)
             status=request.POST.get('comment')
             details=appointment.objects.get(appointmentno=aptid)
             item=trackorder(appointment=details,orderstatus=status)

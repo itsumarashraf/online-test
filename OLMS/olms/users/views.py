@@ -148,13 +148,35 @@ def viewappointment(request,aptid):
             # print(aptid)
             s=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
             
+            if aptdetail.prescription:
+                if aptdetail.report:
+                    url=aptdetail.prescription.url
+                    text="Download Prescription"
+                    urll=aptdetail.report.url
+                    textt="Download Report"
+                else:
+                    url=aptdetail.prescription.url
+                    text="Download Prescription"
+                    urll=aptdetail.report
+                    textt=""               
+            elif aptdetail.report:
+                    url=aptdetail.prescription
+                    text=""
+                    urll=aptdetail.report.url
+                    textt="Download Report" 
+            else:
+                    url=aptdetail.prescription
+                    text=""
+                    urll=aptdetail.report
+                    textt=""
+
             if s:
                 if s.paymentid or s.codstatus==True:
-                    payenable='none'
+                    payenable='disabled'
                 else:
-                    payenable='initial'
-                return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable})
-            return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s})
+                    payenable=''
+                return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'payenable':payenable,'url':url,'urll':urll,'text':text,'textt':textt})
+            return render(request,'view-appointment.html',{'detail':aptdetail, 'status':status,'amt':amt, 'new':new, 'enable':enable,'s':s,'url':url,'urll':urll,'text':text,'textt':textt})
         raise Http404('Page does not exist')
     return redirect('userlogin')
 
@@ -251,9 +273,10 @@ def canceledappointments(request):
 def viewapproved(request, aptid):
     if checkauth(request)==True:
         if request.method == 'POST':
-            status=request.POST.get('mark')
-            comment=request.POST.get('comment')
-            appointmentstatus.objects.filter(appointment__id=apt_id).update(status=status,comment=comment)
+            report=request.FILES.get('file')
+            aptdetail=appointment.objects.get(appointmentno=aptid)
+            aptdetail.report=report
+            aptdetail.save()
         
         aptdetail=appointment.objects.get(appointmentno=aptid)
         status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
@@ -263,10 +286,27 @@ def viewapproved(request, aptid):
         item=trackorder.objects.filter(appointment=aptid)
         # print(pay.paymentstatus)
         if aptdetail.prescription:
-            url=aptdetail.prescription.url
-            text="Download"
+            if aptdetail.report:
+                url=aptdetail.prescription.url
+                text="Download Prescription"
+                urll=aptdetail.report.url
+                textt="Download Report"
+            else:
+                url=aptdetail.prescription.url
+                text="Download Prescription"
+                urll=aptdetail.report
+                textt=""               
+        elif aptdetail.report:
+                url=aptdetail.prescription
+                text=""
+                urll=aptdetail.report.url
+                textt="Download Report" 
         else:
-            url=aptdetail.prescription
-            text=""
-        return render(request, 'viewapproved.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text,'pay':pay,'item':item})
+                url=aptdetail.prescription
+                text=""
+                urll=aptdetail.report
+                textt="" 
+
+
+        return render(request, 'viewapproved.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url,'urll':urll,'textt':textt, 'text':text,'pay':pay,'item':item})
     return redirect('userlogin')

@@ -70,6 +70,14 @@
             <td><a href="{{url}}" download="{{detail.prescription}}" target="_blank">{{text}}</a></td>
           </tr>
         </tbody>
+        <thead>
+          <tr>
+            <th scope="row" class="text-light bg-primary">Report</th>
+          </tr>
+        </thead>
+        <tr>
+          <td style="background-color: #ccc20033;"><a href="{{urll}}" download="{{detail.report}}" target="_blank">{{textt}}</a></td>
+        </tr>
       </table>
     </div>
   </div>
@@ -190,6 +198,18 @@
                 <tbody>
                 </tbody>
               </table>
+              {% if not detail.report %}
+              <form method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token%}
+                <div class="form-group">
+                    <label for="report">Upload Report (if Ready):</label>
+                    <input type="file" class="form-control-file" name="file" id="report">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+                </form>
+                {% endif %}
         </div>
         <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...
         </div>
@@ -220,7 +240,6 @@
           <!-- ################# form starts here ##################################### -->
           <form method="POST" action="{% url 'updatetrack' detail.appointmentno %}">
             {% csrf_token%}
-            
             <div class="form-group">
               <label for="comment">Comment</label>
               <textarea maxlength="100" class="form-control" id="comment" rows="3" name="comment"></textarea>

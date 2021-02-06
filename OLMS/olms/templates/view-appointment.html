@@ -71,6 +71,14 @@
             <td><a href="{{url}}" download="{{detail.prescription}}" target="_blank">{{text}}</a></td>
           </tr>
         </tbody>
+        <thead>
+          <tr>
+            <th scope="row" class="text-light bg-primary">Report</th>
+          </tr>
+        </thead>
+        <tr>
+          <td style="background-color: #ccc20033;"><a href="{{urll}}" download="{{detail.report}}" target="_blank">{{textt}}</a></td>
+        </tr>
       </table>
       <br>
       <div class="row">
@@ -101,7 +109,7 @@
                 <th scope="col">Total</th>
                 <th scope="col">{{amt.amount}}
                   <!-- <button type="submit" class="btn btn-primary rounded-pill float-right" {{enable}}><i class="fas fa-cart-plus pr-1"></i>Pay</button> -->
-                  <a href="{% url 'checkout' detail.appointmentno %}" class="btn btn-primary rounded-pill float-right" style="display:{{payenable}};"><i class="fas fa-cart-plus pr-1"></i>Pay</a>
+                  <a href="{% url 'checkout' detail.appointmentno %}" class="btn btn-primary rounded-pill float-right {{payenable}}"><i class="fas fa-cart-plus pr-1"></i>Pay</a>
                 </th>
               </tr>
             </thead>
