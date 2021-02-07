@@ -10,6 +10,10 @@ from django.utils.decorators import method_decorator
 from ordertracking.views import tracking,track
 from django.http import Http404
 from ordertracking.models import trackorder
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
 
 # Create your views here.
 def checkauth(request):
@@ -68,7 +72,7 @@ def aptsuccess(request):
     if request.method=="POST":
         userid=request.POST.get('loggeduserid')
         who=enduser.objects.get(id=userid)
-        userid= who
+        user= who
         aptid = random_aptno()
         name=request.POST.get('patientname')
         address=request.POST.get('address')
@@ -78,7 +82,7 @@ def aptsuccess(request):
         mail=request.POST.get('email')
         ticket=request.FILES.get("file")
         
-        document = appointment(user_id=userid,appointmentno=aptid,patientname=name,address=address,gender=gender,dateofbirth=dob,mobile=cell,email=mail,prescription=ticket)
+        document = appointment(user_id=user,appointmentno=aptid,patientname=name,address=address,gender=gender,dateofbirth=dob,mobile=cell,email=mail,prescription=ticket)
         document.save()
         apt= appointmentstatus(appointment=document)
         apt.save()
@@ -103,7 +107,9 @@ def aptsuccess(request):
         # -----------------------------------------------------------------------
         
         tracking(document)  #updates tracking details with refrence to current appointment
-
+        sub= 'You Order was Placed.'
+        msg= render_to_string('email/emailtemplate.html',{'user':user,'aptid':aptid})
+        sendemail(who,sub,msg)
     return render(request,'appointment-success.html',{'who':who,'name':name,'aptid':aptid})
 
 
@@ -114,6 +120,10 @@ def calculateamount(price):
     for val in price:
         s=s+int(val)
     return s
+
+
+def sendemail(who,sub,msg):
+    send_mail(sub,msg,settings.EMAIL_HOST_USER,[who.email],fail_silently=False,)
 
 
 
@@ -277,7 +287,14 @@ def viewapproved(request, aptid):
             aptdetail=appointment.objects.get(appointmentno=aptid)
             aptdetail.report=report
             aptdetail.save()
-        
+            
+            # Sending email after successfull payment
+            u=enduser.objects.get(appointment__appointmentno=aptid)    
+            sub='Your Report has been Generated '
+            msg= render_to_string('email/emailreportgen.html',{'user':u,'aptid':aptdetail})
+            sendemail(u,sub,msg)
+            #---------------------------------------------------------------------------#
+
         aptdetail=appointment.objects.get(appointmentno=aptid)
         status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
         new=testchoice.objects.filter(appointment__appointmentno=aptid)

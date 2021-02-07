@@ -45,6 +45,14 @@ def checkout(request,aptid):
                 ramount= amt.amount
                 pay=paymentdetail(appointment=new,amountdue=ramount,orderid='NA',paymentid='NA',codstatus=True)
                 pay.save()
+
+                # Sending email after successfull payment
+                u=enduser.objects.get(appointment__appointmentno=aptid)    
+                sub='Your order was Successfull placed as COD '
+                msg= render_to_string('email/emailcodsuccess.html',{'user':u,'aptid':aptid})
+                sendemail(u,sub,msg)
+                #---------------------------------------------------------------------------#
+
                 return render(request,'payments/codsuccess.html',{'aptid':aptid, 'new':new,'amt':amt})
 
             elif result == 'online':
@@ -77,6 +85,14 @@ def success(request):
             user.paymentstatus=True
             user.paymentid=postpaymentid 
             user.save()
+
+            # Sending email after successfull payment
+            u=enduser.objects.get(appointment__appointmentno=apt)    
+            sub='Your Payment was Successfull'
+            msg= render_to_string('email/emailpaymentsuccess.html',{'user':u,'aptid':apt})
+            sendemail(u,sub,msg)
+            #---------------------------------------------------------------------------#
+            
             return render(request,'payments/success.html',{'apt':apt})
         else:
             return HttpResponse("Payment Failed")    
