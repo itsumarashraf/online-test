@@ -92,7 +92,7 @@ def success(request):
             msg= render_to_string('email/emailpaymentsuccess.html',{'user':u,'aptid':apt})
             sendemail(u,sub,msg)
             #---------------------------------------------------------------------------#
-            
+            sendsms(msg,u)
             return render(request,'payments/success.html',{'apt':apt})
         else:
             return HttpResponse("Payment Failed")    

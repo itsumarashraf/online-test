@@ -107,13 +107,25 @@ def aptsuccess(request):
         # -----------------------------------------------------------------------
         
         tracking(document)  #updates tracking details with refrence to current appointment
+
+        # function to send email notifications at appointment booking
         sub= 'You Order was Placed.'
         msg= render_to_string('email/emailtemplate.html',{'user':user,'aptid':aptid})
         sendemail(who,sub,msg)
+        #-----------------------------------------------------------------------------
+        sendsms(msg,who)
     return render(request,'appointment-success.html',{'who':who,'name':name,'aptid':aptid})
 
+from twilio.rest import Client
 
-
+def sendsms(msg,who):
+    SID='AC69f8d130465994c64e627e332f4ec575'
+    TOKEN='ae028a7aaf372302b6744a08f375894f'
+    client = Client(SID, TOKEN)
+    ph='+91'
+    n=str(who.phone)
+    phone=ph+n
+    client.messages.create(body=msg,from_='+14075055327',to=phone)
 
 def calculateamount(price):
     s=0
@@ -288,11 +300,12 @@ def viewapproved(request, aptid):
             aptdetail.report=report
             aptdetail.save()
             
-            # Sending email after successfull payment
+            # Sending email after report is uploaded
             u=enduser.objects.get(appointment__appointmentno=aptid)    
             sub='Your Report has been Generated '
             msg= render_to_string('email/emailreportgen.html',{'user':u,'aptid':aptdetail})
             sendemail(u,sub,msg)
+            sendsms(msg,u)
             #---------------------------------------------------------------------------#
 
         aptdetail=appointment.objects.get(appointmentno=aptid)
