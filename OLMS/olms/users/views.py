@@ -120,11 +120,12 @@ from twilio.rest import Client
 
 def sendsms(msg,who):
     SID='AC69f8d130465994c64e627e332f4ec575'
-    TOKEN='ae028a7aaf372302b6744a08f375894f'
+    TOKEN='5a162f1ba68fa23dbff03161c2da3e05'
     client = Client(SID, TOKEN)
     ph='+91'
     n=str(who.phone)
     phone=ph+n
+    print(phone)
     client.messages.create(body=msg,from_='+14075055327',to=phone)
 
 def calculateamount(price):
@@ -224,7 +225,8 @@ def userlogin(request):
                 # return render(request,'userside.html',{'name':user,'email':email})
                 return redirect('userside')
             else:
-                return HttpResponse('email or password wrong')
+                message='Invalid Email or Password'
+                return render(request,'userreg/userlogin.html',{'message':message})
 
         return render(request,'userreg/userlogin.html')
                 
@@ -240,6 +242,7 @@ def userregister(request):
         password=request.POST.get('password')
         userreg = enduser(firstname=fname,lastname=lname,username=uname,phone=phone,email=email,password=password)
         userreg.save()
+        return redirect('userlogin')
     return render(request,'userreg/userregister.html')
 
 def userlogout(request):
@@ -275,10 +278,10 @@ def appointmentdetail(request,apt_id):
     return render(request, 'appointment-details.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url, 'text':text,'pay':pay})
     
 def approvedappointments(request):
-    if checkauth(request)==True:
+    
         new=appointment.objects.filter(appointmentstatus__status='Approve')
         return render(request, 'approved-apts.html',{'newapt':new})
-    return redirect('userlogin')
+    
 
 def rejectedappointments(request):
     if checkauth(request)==True:
@@ -293,50 +296,49 @@ def canceledappointments(request):
     return redirect('userlogin')
 
 def viewapproved(request, aptid):
-    if checkauth(request)==True:
-        if request.method == 'POST':
-            report=request.FILES.get('file')
-            aptdetail=appointment.objects.get(appointmentno=aptid)
-            aptdetail.report=report
-            aptdetail.save()
-            
-            # Sending email after report is uploaded
-            u=enduser.objects.get(appointment__appointmentno=aptid)    
-            sub='Your Report has been Generated '
-            msg= render_to_string('email/emailreportgen.html',{'user':u,'aptid':aptdetail})
-            sendemail(u,sub,msg)
-            sendsms(msg,u)
-            #---------------------------------------------------------------------------#
-
+    if request.method == 'POST':
+        report=request.FILES.get('file')
         aptdetail=appointment.objects.get(appointmentno=aptid)
-        status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
-        new=testchoice.objects.filter(appointment__appointmentno=aptid)
-        amt=orderamount.objects.get(appointment__appointmentno=aptid)
-        pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
-        item=trackorder.objects.filter(appointment=aptid)
-        # print(pay.paymentstatus)
-        if aptdetail.prescription:
-            if aptdetail.report:
-                url=aptdetail.prescription.url
-                text="Download Prescription"
-                urll=aptdetail.report.url
-                textt="Download Report"
-            else:
-                url=aptdetail.prescription.url
-                text="Download Prescription"
-                urll=aptdetail.report
-                textt=""               
-        elif aptdetail.report:
-                url=aptdetail.prescription
-                text=""
-                urll=aptdetail.report.url
-                textt="Download Report" 
+        aptdetail.report=report
+        aptdetail.save()
+        
+        # Sending email after report is uploaded
+        u=enduser.objects.get(appointment__appointmentno=aptid)    
+        sub='Your Report has been Generated '
+        msg= render_to_string('email/emailreportgen.html',{'user':u,'aptid':aptdetail})
+        sendemail(u,sub,msg)
+        sendsms(msg,u)
+        #---------------------------------------------------------------------------#
+
+    aptdetail=appointment.objects.get(appointmentno=aptid)
+    status=appointmentstatus.objects.get(appointment__appointmentno=aptid)
+    new=testchoice.objects.filter(appointment__appointmentno=aptid)
+    amt=orderamount.objects.get(appointment__appointmentno=aptid)
+    pay=paymentdetail.objects.filter(appointment__appointmentno=aptid).first()
+    item=trackorder.objects.filter(appointment=aptid)
+    # print(pay.paymentstatus)
+    if aptdetail.prescription:
+        if aptdetail.report:
+            url=aptdetail.prescription.url
+            text="Download Prescription"
+            urll=aptdetail.report.url
+            textt="Download Report"
         else:
-                url=aptdetail.prescription
-                text=""
-                urll=aptdetail.report
-                textt="" 
+            url=aptdetail.prescription.url
+            text="Download Prescription"
+            urll=aptdetail.report
+            textt=""               
+    elif aptdetail.report:
+            url=aptdetail.prescription
+            text=""
+            urll=aptdetail.report.url
+            textt="Download Report" 
+    else:
+            url=aptdetail.prescription
+            text=""
+            urll=aptdetail.report
+            textt="" 
 
 
-        return render(request, 'viewapproved.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url,'urll':urll,'textt':textt, 'text':text,'pay':pay,'item':item})
-    return redirect('userlogin')
+    return render(request, 'viewapproved.html',{'detail':aptdetail, 'new':new,'amt':amt, 'status':status, 'url':url,'urll':urll,'textt':textt, 'text':text,'pay':pay,'item':item})
+    

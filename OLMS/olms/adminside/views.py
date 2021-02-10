@@ -12,12 +12,12 @@ from users.models import appointmentstatus
 
 @login_required(login_url='adminlogin')
 def adminside(request):
-    
     n=appointmentstatus.objects.filter(status='NEW')
     r=appointmentstatus.objects.filter(status='Reject')
     a=appointmentstatus.objects.filter(status='Approve')
     c=appointmentstatus.objects.filter(status='Cancel')
-    
+    value = request.COOKIES.get('cookie_name')
+    print('cookie is ',value)
     return render(request,'adminside.html',{'n':len(n),'r':len(r),'a':len(a),'c':len(c)})
 
 @login_required(login_url='adminlogin')
@@ -60,18 +60,25 @@ def adminregister(request):
 
     context = {'form':form}
     return render(request, 'registration/adminregister.html', context)
-    
+from django.template import RequestContext
+
 def adminlogin(request):
+    message=''
     if request.method == 'POST':
         username=request.POST.get('username')
         password=request.POST.get('password')
+        remember=request.POST.get('remember')
+        if remember:
+            response = HttpResponse('blah')
+            response.set_cookie('cookie_name', 'cookie_value')
         user=authenticate(request, username=username, password=password)
-
+        
         if user is not None:
             login(request, user)
-            return redirect('adminside')
-
-    return render(request, 'registration/adminlogin.html')
+            return redirect('adminside')            
+        
+        message='Incorrect Email or Password'
+    return render(request, 'registration/adminlogin.html',{'message':message})
 
 def adminlogout(request):
     logout(request)
